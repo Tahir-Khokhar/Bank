@@ -5,30 +5,25 @@ from django.contrib.auth.hashers import make_password, check_password
 
 
 class Customer(models.Model):
-    """Customer role model.
 
-    Passwords are stored using Django's hashing helpers.
-    """
+    full_name = models.CharField(max_length=150)  # Store customer full name
+    username = models.CharField(max_length=150, unique=True)  # Store unique username
+    email = models.EmailField(max_length=254, unique=True)  # Store unique email
+    password = models.CharField(max_length=255)  # Store hashed password
 
-    full_name = models.CharField(max_length=150)
-    username = models.CharField(max_length=150, unique=True)
-    email = models.EmailField(max_length=254, unique=True)
-    password = models.CharField(max_length=255)  # hashed password
+    is_active = models.BooleanField(default=True)  # Store account status
+    created_at = models.DateTimeField(auto_now_add=True)  # Save account creation time
+    updated_at = models.DateTimeField(auto_now=True)  # Update modified time
 
-    is_active = models.BooleanField(default=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    class Meta:  # Define model settings
+        verbose_name = "Customer"  # Set model display name
+        verbose_name_plural = "Customers"  # Set plural display name
 
-    class Meta:
-        verbose_name = "Customer"
-        verbose_name_plural = "Customers"
+    def __str__(self) -> str:  # Return customer name as a string
+        return f"{self.full_name} ({self.username})"  # Return customer name
 
-    def __str__(self) -> str:
-        return f"{self.full_name} ({self.username})"
+    def set_password(self, raw_password: str) -> None:  # Set hashed password
+        self.password = make_password(raw_password)  # Hash password
 
-    def set_password(self, raw_password: str) -> None:
-        self.password = make_password(raw_password)
-
-    def check_password(self, raw_password: str) -> bool:
-        return check_password(raw_password, self.password)
-
+    def check_password(self, raw_password: str) -> bool:  # Check entered password
+        return check_password(raw_password, self.password)  # Verify password
