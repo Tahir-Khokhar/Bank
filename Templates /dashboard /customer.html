@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %}Customer Dashboard | Bank Management System{% endblock %}
+
+{% block content %}
+  <div class="d-flex align-items-center justify-content-between mb-3">
+    <div>
+      <h1 class="h3 fw-bold mb-1"><i class="bi bi-person-bounding-box me-2"></i> Customer Dashboard</h1>
+      <p class="text-muted mb-0">View account summaries and transaction history (integration later).</p>
+    </div>
+    <span class="badge text-bg-warning rounded-pill">Self Service</span>
+  </div>
+
+  <div class="row g-3">
+    {% include 'partials/cards.html' %}
+  </div>
+
+  <div class="mt-4">
+    <h2 class="h5 fw-bold mb-2"><i class="bi bi-receipt me-2"></i> Latest Transactions</h2>
+    {% include 'partials/tables.html' %}
+    <div class="mt-3">{% include 'partials/pagination.html' %}</div>
+  </div>
+{% endblock %}
+
