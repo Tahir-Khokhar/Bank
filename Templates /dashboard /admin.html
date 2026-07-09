@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block title %}Admin Dashboard | Bank Management System{% endblock %}
+
+{% block content %}
+  <div class="d-flex align-items-center justify-content-between mb-3">
+    <div>
+      <h1 class="h3 fw-bold mb-1"><i class="bi bi-shield-lock me-2"></i> Admin Dashboard</h1>
+      <p class="text-muted mb-0">Overview of customers, accounts, loans and employees.</p>
+    </div>
+    <span class="badge text-bg-primary rounded-pill">Enterprise UI</span>
+  </div>
+
+  <div class="row g-3">
+    {% include 'partials/cards.html' %}
+  </div>
+
+  <div class="mt-4">
+    <h2 class="h5 fw-bold mb-2"><i class="bi bi-table me-2"></i> Recent Activity</h2>
+    {% include 'partials/tables.html' %}
+  </div>
+{% endblock %}
+
