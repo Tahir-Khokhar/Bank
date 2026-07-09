@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block title %}Employee Dashboard | Bank Management System{% endblock %}
+
+{% block content %}
+  <div class="d-flex align-items-center justify-content-between mb-3">
+    <div>
+      <h1 class="h3 fw-bold mb-1"><i class="bi bi-briefcase me-2"></i> Employee Dashboard</h1>
+      <p class="text-muted mb-0">Manage day-to-day operations and view assigned workload.</p>
+    </div>
+    <span class="badge text-bg-success rounded-pill">Operational</span>
+  </div>
+
+  <div class="row g-3">
+    {% include 'partials/cards.html' %}
+  </div>
+
+  <div class="mt-4">
+    <h2 class="h5 fw-bold mb-2"><i class="bi bi-clipboard-data me-2"></i> Work Queue</h2>
+    {% include 'partials/tables.html' %}
+  </div>
+{% endblock %}
+
