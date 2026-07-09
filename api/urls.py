@@ -1,16 +1,21 @@
 from django.urls import path
 
 from .views import (
-    CustomerLoginAPIView,
-    CustomerRegisterAPIView,
-    EmployeeLoginAPIView,
-    EmployeeRegisterAPIView,
+    CustomerListAPIView,
+    EmployeeListAPIView,
+
 )
 
+
+app_name = "api"
+
 urlpatterns = [
-    path("employees/register/", EmployeeRegisterAPIView.as_view(), name="employee-register"),
-    path("employees/login/", EmployeeLoginAPIView.as_view(), name="employee-login"),
-    path("customers/register/", CustomerRegisterAPIView.as_view(), name="customer-register"),
-    path("customers/login/", CustomerLoginAPIView.as_view(), name="customer-login"),
+    path("employees/", EmployeeListAPIView.as_view(), name="employee-list"),
+    path("customers/", CustomerListAPIView.as_view(), name="customer-list"),
+    
 ]
+
+
+
+
 
