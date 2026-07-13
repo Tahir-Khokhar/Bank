@@ -1,0 +1,112 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load humanize %}
+{% block title %}{{ customer.full_name }} | BankMS{% endblock %}
+{% block breadcrumb_items %}<li class="breadcrumb-item"><a href="{% url 'customer-manage-list' %}">Customers</a></li><li class="breadcrumb-item active">{{ customer.full_name }}</li>{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+  <div class="d-flex align-items-center gap-3">
+    <span class="avatar avatar-lg avatar-initial" style="font-size:1.6rem;">{{ customer.full_name|slice:':1'|upper }}</span>
+    <div>
+      <h3 class="fw-bold mb-0">{{ customer.full_name }}</h3>
+      <div class="text-muted">{{ customer.customer_code }} • @{{ customer.username }}
+        {% if customer.is_active %}<span class="badge text-bg-success ms-1">Active</span>{% else %}<span class="badge text-bg-secondary ms-1">Inactive</span>{% endif %}
+      </div>
+    </div>
+  </div>
+  <div class="d-flex gap-2">
+    <a href="{% url 'customer-staff-edit' customer.id %}" class="btn btn-outline-primary"><i class="bi bi-pencil me-1"></i>Edit</a>
+    {% if is_manager %}
+    <form method="post" action="{% url 'customer-toggle-active' customer.id %}">{% csrf_token %}
+      <button class="btn btn-outline-{% if customer.is_active %}danger{% else %}success{% endif %}">
+        {% if customer.is_active %}<i class="bi bi-slash-circle me-1"></i>Deactivate{% else %}<i class="bi bi-check-circle me-1"></i>Activate{% endif %}
+      </button>
+    </form>
+    {% endif %}
+  </div>
+</div>
+
+<div class="row g-3">
+  <div class="col-lg-4">
+    <div class="card mb-3"><div class="card-body">
+      <h6 class="fw-bold mb-3">Contact & KYC</h6>
+      <div class="small">
+        <div class="mb-2"><span class="text-muted">Email:</span> {{ customer.email }}</div>
+        <div class="mb-2"><span class="text-muted">Phone:</span> {{ customer.phone|default:"—" }}</div>
+        <div class="mb-2"><span class="text-muted">CNIC:</span> {{ customer.cnic|default:"—" }}</div>
+        <div class="mb-2"><span class="text-muted">Occupation:</span> {{ customer.occupation|default:"—" }}</div>
+        <div class="mb-2"><span class="text-muted">Income:</span> {% if customer.monthly_income %}Rs {{ customer.monthly_income|floatformat:0|intcomma }}{% else %}—{% endif %}</div>
+        <div class="mb-2"><span class="text-muted">Branch:</span> {{ customer.branch.name|default:"—" }}</div>
+        <div><span class="text-muted">Address:</span> {{ customer.address|default:"—" }}</div>
+      </div>
+    </div></div>
+    <div class="card"><div class="card-body">
+      <h6 class="fw-bold mb-3">Open New Account</h6>
+      <form method="post" action="{% url 'account-open' customer.id %}" class="d-flex gap-2">{% csrf_token %}
+        <select name="account_type" class="form-select form-select-sm">
+          <option value="savings">Savings</option><option value="current">Current</option>
+          <option value="salary">Salary</option><option value="fixed">Fixed Deposit</option>
+        </select>
+        <button class="btn btn-sm btn-primary text-nowrap"><i class="bi bi-plus-lg"></i></button>
+      </form>
+    </div></div>
+  </div>
+
+  <div class="col-lg-8">
+    <div class="card mb-3"><div class="card-body">
+      <h6 class="fw-bold mb-3">Accounts</h6>
+      <div class="table-responsive"><table class="table table-sm align-middle mb-0">
+        <thead><tr><th>Account #</th><th>Type</th><th class="text-end">Balance</th><th>Status</th>{% if is_manager %}<th></th>{% endif %}</tr></thead>
+        <tbody>
+          {% for a in accounts %}
+          <tr>
+            <td>{{ a.account_number }}</td><td>{{ a.get_account_type_display }}</td>
+            <td class="text-end fw-semibold">Rs {{ a.balance|floatformat:2|intcomma }}</td>
+            <td><span class="badge text-bg-light">{{ a.get_status_display }}</span></td>
+            {% if is_manager %}
+            <td class="text-end">
+              <form method="post" action="{% url 'account-status' a.id %}" class="d-inline-flex gap-1">{% csrf_token %}
+                <select name="status" class="form-select form-select-sm" style="width:auto;">
+                  {% for value, label in a.Status.choices %}<option value="{{ value }}" {% if a.status == value %}selected{% endif %}>{{ label }}</option>{% endfor %}
+                </select>
+                <button class="btn btn-sm btn-outline-secondary">Set</button>
+              </form>
+            </td>
+            {% endif %}
+          </tr>
+          {% empty %}<tr><td colspan="5" class="text-center text-muted py-3">No accounts</td></tr>{% endfor %}
+        </tbody>
+      </table></div>
+    </div></div>
+
+    <div class="card mb-3"><div class="card-body">
+      <div class="d-flex justify-content-between mb-3"><h6 class="fw-bold mb-0">Loans</h6></div>
+      <div class="table-responsive"><table class="table table-sm align-middle mb-0">
+        <thead><tr><th>Reference</th><th>Type</th><th class="text-end">Amount</th><th>Status</th></tr></thead>
+        <tbody>
+          {% for l in loans %}
+          <tr><td><a href="{% url 'loan-detail' l.id %}" class="text-decoration-none">{{ l.reference }}</a></td>
+            <td>{{ l.get_loan_type_display }}</td><td class="text-end">Rs {{ l.principal_amount|floatformat:0|intcomma }}</td>
+            <td><span class="badge text-bg-light">{{ l.get_status_display }}</span></td></tr>
+          {% empty %}<tr><td colspan="4" class="text-center text-muted py-3">No loans</td></tr>{% endfor %}
+        </tbody>
+      </table></div>
+    </div></div>
+
+    <div class="card"><div class="card-body">
+      <h6 class="fw-bold mb-3">Recent Transactions</h6>
+      <div class="table-responsive"><table class="table table-sm align-middle mb-0">
+        <thead><tr><th>Date</th><th>Type</th><th>Account</th><th class="text-end">Amount</th></tr></thead>
+        <tbody>
+          {% for t in recent_transactions %}
+          <tr><td class="small">{{ t.created_at|date:"d M Y" }}</td><td>{{ t.get_txn_type_display }}</td>
+            <td class="small">{{ t.account.account_number }}</td>
+            <td class="text-end {% if t.direction == 'credit' %}text-success{% else %}text-danger{% endif %}">
+              {% if t.direction == 'credit' %}+{% else %}-{% endif %}Rs {{ t.amount|floatformat:2|intcomma }}</td></tr>
+          {% empty %}<tr><td colspan="4" class="text-center text-muted py-3">No transactions</td></tr>{% endfor %}
+        </tbody>
+      </table></div>
+    </div></div>
+  </div>
+</div>
+{% endblock %}
