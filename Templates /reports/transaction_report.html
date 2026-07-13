@@ -1,0 +1,59 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load humanize %}
+{% block title %}Transaction Report | BankMS{% endblock %}
+{% block breadcrumb_items %}<li class="breadcrumb-item"><a href="{% url 'reports-home' %}">Reports</a></li><li class="breadcrumb-item active">Transactions</li>{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+  <h2 class="fw-bold mb-0">Transaction Report</h2>
+  <div class="d-flex gap-2 app-no-print">
+    <a href="?period={{ period }}&export=pdf" class="btn btn-outline-danger btn-sm"><i class="bi bi-file-earmark-pdf me-1"></i>PDF</a>
+    <a href="?period={{ period }}&export=excel" class="btn btn-outline-success btn-sm"><i class="bi bi-file-earmark-excel me-1"></i>Excel</a>
+    <a href="?period={{ period }}&export=csv" class="btn btn-outline-secondary btn-sm"><i class="bi bi-filetype-csv me-1"></i>CSV</a>
+    <button onclick="window.print()" class="btn btn-outline-dark btn-sm"><i class="bi bi-printer me-1"></i>Print</button>
+  </div>
+</div>
+
+<div class="card mb-3 app-no-print"><div class="card-body">
+  <form method="get" class="d-flex gap-2 align-items-end">
+    <div><label class="form-label small">Period</label>
+      <select class="form-select form-select-sm" name="period" onchange="this.form.submit()">
+        <option value="today" {% if period == 'today' %}selected{% endif %}>Today</option>
+        <option value="week" {% if period == 'week' %}selected{% endif %}>This Week</option>
+        <option value="month" {% if period == 'month' %}selected{% endif %}>This Month</option>
+        <option value="year" {% if period == 'year' %}selected{% endif %}>This Year</option>
+        <option value="all" {% if period == 'all' %}selected{% endif %}>All Time</option>
+      </select></div>
+  </form>
+</div></div>
+
+<div class="row g-3 mb-3">
+  {% include 'partials/stat_card.html' with label='Transactions' value=count icon='bi-receipt' tint='primary' %}
+  {% include 'partials/stat_card.html' with label='Total Credits' prefix='Rs ' value=credits|floatformat:0 icon='bi-arrow-down-left' tint='success' %}
+  {% include 'partials/stat_card.html' with label='Total Debits' prefix='Rs ' value=debits|floatformat:0 icon='bi-arrow-up-right' tint='danger' %}
+  {% include 'partials/stat_card.html' with label='Records Shown' value=count icon='bi-list-ol' tint='info' %}
+</div>
+
+<div class="card"><div class="table-responsive">
+  <table class="table table-sm table-hover align-middle mb-0">
+    <thead><tr><th>Date</th><th>Reference</th><th>Account</th><th>Customer</th><th>Type</th><th>Status</th><th class="text-end">Amount</th></tr></thead>
+    <tbody>
+      {% for t in transactions %}
+      <tr>
+        <td class="small">{{ t.created_at|date:"d M Y H:i" }}</td>
+        <td class="small">{{ t.reference }}</td>
+        <td class="small">{{ t.account.account_number }}</td>
+        <td class="small">{{ t.account.customer.full_name }}</td>
+        <td>{{ t.get_txn_type_display }}</td>
+        <td>{% include 'partials/txn_status.html' with status=t.status %}</td>
+        <td class="text-end {% if t.direction == 'credit' %}text-success{% else %}text-danger{% endif %}">
+          {% if t.direction == 'credit' %}+{% else %}-{% endif %}Rs {{ t.amount|floatformat:2|intcomma }}</td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="7"><div class="empty-state"><i class="bi bi-receipt"></i><p>No transactions</p></div></td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div></div>
+<p class="text-muted small mt-2">Showing up to 200 rows on screen; export for the full dataset.</p>
+{% endblock %}
