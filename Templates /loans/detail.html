@@ -1,0 +1,105 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load humanize %}
+{% block title %}Loan {{ loan.reference }} | BankMS{% endblock %}
+{% block breadcrumb_items %}<li class="breadcrumb-item"><a href="{% url 'loan-list' %}">Loans</a></li><li class="breadcrumb-item active">{{ loan.reference }}</li>{% endblock %}
+
+{% block content %}
+<div class="row g-3">
+  <div class="col-lg-8">
+    <div class="card mb-3"><div class="card-body p-4">
+      <div class="d-flex justify-content-between align-items-start mb-3">
+        <div>
+          <h4 class="fw-bold mb-1">{{ loan.get_loan_type_display }}</h4>
+          <div class="text-muted">{{ loan.reference }} • {{ loan.customer.full_name }}</div>
+        </div>
+        <span class="badge text-bg-{% if loan.status == 'active' or loan.status == 'approved' or loan.status == 'closed' %}success{% elif loan.status == 'rejected' or loan.status == 'defaulted' %}danger{% else %}warning{% endif %} fs-6">{{ loan.get_status_display }}</span>
+      </div>
+
+      <div class="row g-3">
+        <div class="col-md-4"><div class="text-muted small">Principal</div><div class="fw-semibold">Rs {{ loan.principal_amount|floatformat:2|intcomma }}</div></div>
+        <div class="col-md-4"><div class="text-muted small">Interest Rate</div><div class="fw-semibold">{{ loan.interest_rate }}% p.a.</div></div>
+        <div class="col-md-4"><div class="text-muted small">Tenure</div><div class="fw-semibold">{{ loan.tenure_months }} months</div></div>
+        <div class="col-md-4"><div class="text-muted small">Monthly EMI</div><div class="fw-semibold">Rs {{ loan.emi_amount|floatformat:2|intcomma }}</div></div>
+        <div class="col-md-4"><div class="text-muted small">Total Payable</div><div class="fw-semibold">Rs {{ loan.total_payable|floatformat:2|intcomma }}</div></div>
+        <div class="col-md-4"><div class="text-muted small">Remaining</div><div class="fw-semibold">Rs {{ loan.remaining_amount|floatformat:2|intcomma }}</div></div>
+        <div class="col-12"><div class="text-muted small">Purpose</div><div>{{ loan.purpose|default:"—" }}</div></div>
+      </div>
+
+      <div class="mt-3">
+        <div class="d-flex justify-content-between small"><span>Repayment progress</span><span>{{ loan.progress_percent }}%</span></div>
+        <div class="progress mt-1" style="height:10px;"><div class="progress-bar bg-success" style="width: {{ loan.progress_percent }}%"></div></div>
+      </div>
+
+      {% if loan.decision_note %}
+        <div class="alert alert-light border mt-3 mb-0"><i class="bi bi-chat-left-text me-1"></i>{{ loan.decision_note }}</div>
+      {% endif %}
+    </div></div>
+
+    <div class="card"><div class="card-body">
+      <h6 class="fw-bold mb-3">Repayment History</h6>
+      <div class="table-responsive"><table class="table table-sm align-middle mb-0">
+        <thead><tr><th>Date</th><th>Method</th><th class="text-end">Amount</th></tr></thead>
+        <tbody>
+          {% for r in repayments %}
+          <tr><td class="small">{{ r.paid_at|date:"d M Y H:i" }}</td><td>{{ r.get_method_display }}</td>
+            <td class="text-end fw-semibold">Rs {{ r.amount|floatformat:2|intcomma }}</td></tr>
+          {% empty %}<tr><td colspan="3" class="text-center text-muted py-3">No repayments yet</td></tr>{% endfor %}
+        </tbody>
+      </table></div>
+    </div></div>
+  </div>
+
+  <div class="col-lg-4">
+    <!-- Customer/staff repayment -->
+    {% if loan.status == 'active' or loan.status == 'disbursed' %}
+    <div class="card mb-3"><div class="card-body">
+      <h6 class="fw-bold mb-3">Make a Repayment</h6>
+      <form method="post" action="{% url 'loan-repay' loan.id %}">{% csrf_token %}
+        <div class="mb-2"><input class="form-control" type="number" step="0.01" name="amount" placeholder="Amount" value="{{ loan.emi_amount|floatformat:2 }}" required></div>
+        {% if current_role == 'customer' and customer_accounts %}{% endif %}
+        <input type="hidden" name="method" value="account">
+        <button class="btn btn-success w-100"><i class="bi bi-cash me-1"></i>Pay EMI</button>
+      </form>
+    </div></div>
+    {% endif %}
+
+    <!-- Staff decision panel -->
+    {% if is_staff %}
+    <div class="card"><div class="card-body">
+      <h6 class="fw-bold mb-3">Staff Actions</h6>
+      {% if loan.status == 'pending' or loan.status == 'under_review' %}
+        <form method="post" action="{% url 'loan-decision' loan.id %}" class="mb-2">{% csrf_token %}
+          <input type="hidden" name="action" value="review">
+          <button class="btn btn-outline-secondary w-100"><i class="bi bi-arrow-up-right-circle me-1"></i>Forward to Manager</button>
+        </form>
+        {% if can_decide %}
+        <form method="post" action="{% url 'loan-decision' loan.id %}">
+          {% csrf_token %}
+          <textarea class="form-control mb-2" name="note" rows="2" placeholder="Decision note (optional)"></textarea>
+          <div class="d-grid gap-2">
+            <button name="action" value="approve" class="btn btn-success"><i class="bi bi-check2 me-1"></i>Approve</button>
+            <button name="action" value="reject" class="btn btn-danger"><i class="bi bi-x-lg me-1"></i>Reject</button>
+          </div>
+        </form>
+        {% else %}
+          <div class="text-muted small">You can forward this loan; only authorised staff/managers can approve or reject.</div>
+        {% endif %}
+      {% elif loan.status == 'approved' and can_decide %}
+        <form method="post" action="{% url 'loan-decision' loan.id %}">{% csrf_token %}
+          <input type="hidden" name="action" value="disburse">
+          {% if not loan.account %}
+          <select name="account" class="form-select mb-2" required>
+            <option value="">Select disbursement account</option>
+            {% for a in customer_accounts %}<option value="{{ a.id }}">{{ a.account_number }}</option>{% endfor %}
+          </select>
+          {% endif %}
+          <button class="btn btn-primary w-100"><i class="bi bi-bank me-1"></i>Disburse Loan</button>
+        </form>
+      {% else %}
+        <div class="text-muted small">No pending actions for this loan.</div>
+      {% endif %}
+    </div></div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
