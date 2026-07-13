@@ -1,0 +1,44 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load humanize %}
+{% block title %}{{ txn.reference }} | BankMS{% endblock %}
+{% block breadcrumb_items %}<li class="breadcrumb-item"><a href="{% url 'transaction-list' %}">Transactions</a></li><li class="breadcrumb-item active">{{ txn.reference }}</li>{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center"><div class="col-lg-8">
+  <div class="card">
+    <div class="card-body p-4">
+      <div class="d-flex justify-content-between align-items-start mb-4">
+        <div>
+          <span class="stat-icon tint-{% if txn.direction == 'credit' %}success{% else %}danger{% endif %} mb-2"><i class="bi {% if txn.direction == 'credit' %}bi-arrow-down-left{% else %}bi-arrow-up-right{% endif %}"></i></span>
+          <h4 class="fw-bold mb-0 {% if txn.direction == 'credit' %}text-success{% else %}text-danger{% endif %}">
+            {% if txn.direction == 'credit' %}+{% else %}-{% endif %}Rs {{ txn.amount|floatformat:2|intcomma }}</h4>
+          <div class="text-muted">{{ txn.get_txn_type_display }}</div>
+        </div>
+        {% include 'partials/txn_status.html' with status=txn.status %}
+      </div>
+      <div class="row g-3">
+        <div class="col-md-6"><div class="text-muted small">Reference</div><div class="fw-semibold">{{ txn.reference }}</div></div>
+        <div class="col-md-6"><div class="text-muted small">Date & Time</div><div>{{ txn.created_at|date:"d M Y, H:i" }}</div></div>
+        <div class="col-md-6"><div class="text-muted small">Account</div><div>{{ txn.account.account_number }}</div></div>
+        <div class="col-md-6"><div class="text-muted small">Account Holder</div><div>{{ txn.account.customer.full_name }}</div></div>
+        {% if txn.counterparty_account %}
+        <div class="col-md-6"><div class="text-muted small">Counterparty</div><div>{{ txn.counterparty_account.account_number }}</div></div>
+        {% endif %}
+        <div class="col-md-6"><div class="text-muted small">Channel</div><div>{{ txn.get_channel_display }}</div></div>
+        <div class="col-md-6"><div class="text-muted small">Balance After</div><div>Rs {{ txn.balance_after|floatformat:2|intcomma }}</div></div>
+        <div class="col-12"><div class="text-muted small">Description</div><div>{{ txn.description|default:"—" }}</div></div>
+      </div>
+
+      <div class="mt-4 d-flex gap-2 app-no-print">
+        <button onclick="window.print()" class="btn btn-outline-dark"><i class="bi bi-printer me-1"></i>Print Receipt</button>
+        {% if can_reverse %}
+        <form method="post" action="{% url 'transaction-reverse' txn.id %}" onsubmit="return confirm('Reverse this transaction? This will adjust the account balance.');">
+          {% csrf_token %}
+          <button class="btn btn-outline-danger"><i class="bi bi-arrow-counterclockwise me-1"></i>Reverse</button>
+        </form>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div></div>
+{% endblock %}
