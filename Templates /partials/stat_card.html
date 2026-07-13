@@ -1,0 +1,19 @@
+{% comment %}
+Reusable stat card.
+Params: label, value, icon, tint (primary/success/warning/danger/info/dark),
+        sub (optional small text), href (optional link)
+{% endcomment %}
+<div class="col-6 col-lg-3">
+  {% if href %}<a href="{{ href }}" class="text-decoration-none text-reset">{% endif %}
+  <div class="card stat-card h-100">
+    <div class="card-body d-flex align-items-center gap-3">
+      <span class="stat-icon tint-{{ tint|default:'primary' }}"><i class="bi {{ icon|default:'bi-graph-up' }}"></i></span>
+      <div class="min-w-0">
+        <div class="stat-value">{{ prefix }}{{ value }}</div>
+        <div class="stat-label text-truncate">{{ label }}</div>
+        {% if sub %}<div class="small text-muted">{{ sub }}</div>{% endif %}
+      </div>
+    </div>
+  </div>
+  {% if href %}</a>{% endif %}
+</div>
