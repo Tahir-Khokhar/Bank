@@ -1,0 +1,72 @@
+{% load static %}
+<header class="topbar">
+  <button class="btn btn-light d-lg-none" id="sidebarToggle" type="button" aria-label="Toggle menu">
+    <i class="bi bi-list fs-5"></i>
+  </button>
+
+  <h1 class="page-title d-none d-sm-block">{% block topbar_title %}{{ page_title|default:"Dashboard" }}{% endblock %}</h1>
+
+  <div class="ms-auto d-flex align-items-center gap-2 gap-md-3">
+    {% if current_role == 'customer' %}{% url 'customer-profile' as profile_url %}{% url 'customer-profile-edit' as edit_url %}{% url 'customer-change-password' as pwd_url %}{% url 'customer-logout' as logout_url %}
+    {% else %}{% url 'employee-profile' as profile_url %}{% url 'employee-profile-edit' as edit_url %}{% url 'employee-change-password' as pwd_url %}{% url 'employee-logout' as logout_url %}{% endif %}
+
+    <!-- Notifications -->
+    <div class="dropdown">
+      <button class="btn btn-light position-relative" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="bi bi-bell fs-5"></i>
+        {% if unread_notifications %}
+          <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">{{ unread_notifications }}</span>
+        {% endif %}
+      </button>
+      <div class="dropdown-menu dropdown-menu-end p-0" style="width: 340px;">
+        <div class="d-flex justify-content-between align-items-center px-3 py-2 border-bottom">
+          <span class="fw-semibold">Notifications</span>
+          <a href="/dashboard/notifications/" class="small text-decoration-none">View all</a>
+        </div>
+        <div style="max-height: 360px; overflow-y:auto;">
+          {% for n in recent_notifications %}
+            <a href="{{ n.url|default:'/dashboard/notifications/' }}" class="dropdown-item notif-item d-flex gap-2 py-2 border-bottom">
+              <i class="bi {{ n.icon }} fs-5 text-primary"></i>
+              <span class="flex-grow-1">
+                <span class="d-block fw-semibold small">{{ n.title }}</span>
+                <span class="d-block text-muted small">{{ n.message|truncatechars:60 }}</span>
+                <span class="d-block text-muted" style="font-size:.72rem;">{{ n.created_at|timesince }} ago</span>
+              </span>
+              {% if not n.is_read %}<span class="notif-dot mt-2"></span>{% endif %}
+            </a>
+          {% empty %}
+            <div class="text-center text-muted small py-4"><i class="bi bi-bell-slash d-block fs-4 mb-1"></i>No notifications</div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Profile dropdown -->
+    <div class="dropdown">
+      <button class="btn btn-light d-flex align-items-center gap-2 border" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+        {% if current_user.profile_picture %}
+          <img src="{{ current_user.profile_picture.url }}" class="avatar avatar-sm" alt="avatar">
+        {% else %}
+          <span class="avatar avatar-sm avatar-initial">{{ current_user.full_name|slice:':1'|upper }}</span>
+        {% endif %}
+        <span class="d-none d-md-inline text-start lh-1">
+          <span class="d-block fw-semibold small">{{ current_user.full_name }}</span>
+          <span class="d-block text-muted" style="font-size:.72rem;">{{ current_user.display_role }}</span>
+        </span>
+        <i class="bi bi-chevron-down small d-none d-md-inline"></i>
+      </button>
+      <ul class="dropdown-menu dropdown-menu-end">
+        <li class="px-3 py-2 border-bottom">
+          <div class="fw-semibold">{{ current_user.full_name }}</div>
+          <div class="text-muted small">{{ current_user.email }}</div>
+        </li>
+        <li><a class="dropdown-item" href="{{ profile_url }}"><i class="bi bi-person me-2"></i>My Profile</a></li>
+        <li><a class="dropdown-item" href="{{ edit_url }}"><i class="bi bi-pencil-square me-2"></i>Edit Profile</a></li>
+        <li><a class="dropdown-item" href="{{ pwd_url }}"><i class="bi bi-key me-2"></i>Change Password</a></li>
+        <li><a class="dropdown-item" href="/dashboard/notifications/"><i class="bi bi-bell me-2"></i>Notifications</a></li>
+        <li><hr class="dropdown-divider"></li>
+        <li><a class="dropdown-item text-danger" href="{{ logout_url }}"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
+      </ul>
+    </div>
+  </div>
+</header>
