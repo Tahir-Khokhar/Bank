@@ -1,0 +1,14 @@
+{% comment %}
+Breadcrumbs placeholder. Backend can later provide current location.
+{% endcomment %}
+<nav aria-label="breadcrumb" class="mb-3">
+  <ol class="breadcrumb mb-0">
+    <li class="breadcrumb-item"><a href="/">Home</a></li>
+    {% if request.path|slice:1 == 'dashboard' %}
+      <li class="breadcrumb-item active" aria-current="page">Dashboard</li>
+    {% else %}
+      <li class="breadcrumb-item active" aria-current="page">Page</li>
+    {% endif %}
+  </ol>
+</nav>
+
