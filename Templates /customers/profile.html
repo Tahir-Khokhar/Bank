@@ -1,0 +1,65 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load humanize %}
+{% block title %}My Profile | BankMS{% endblock %}
+{% block breadcrumb_items %}<li class="breadcrumb-item active">My Profile</li>{% endblock %}
+
+{% block content %}
+<div class="row g-3">
+  <div class="col-lg-4">
+    <div class="card text-center">
+      <div class="card-body">
+        {% if profile.profile_picture %}
+          <img src="{{ profile.profile_picture.url }}" class="avatar avatar-lg mx-auto mb-3" alt="avatar">
+        {% else %}
+          <span class="avatar avatar-lg avatar-initial mx-auto mb-3" style="font-size:2rem;">{{ profile.full_name|slice:':1'|upper }}</span>
+        {% endif %}
+        <h5 class="fw-bold mb-0">{{ profile.full_name }}</h5>
+        <div class="text-muted">@{{ profile.username }}</div>
+        <span class="badge text-bg-primary mt-2">{{ profile.customer_code }}</span>
+        <div class="d-grid gap-2 mt-3">
+          <a href="{% url 'customer-profile-edit' %}" class="btn btn-primary btn-sm"><i class="bi bi-pencil-square me-1"></i>Edit Profile</a>
+          <a href="{% url 'customer-change-password' %}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-key me-1"></i>Change Password</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-8">
+    <div class="card mb-3">
+      <div class="card-body">
+        <h6 class="fw-bold mb-3">Personal Information</h6>
+        <div class="row g-3">
+          <div class="col-md-6"><div class="text-muted small">Email</div><div>{{ profile.email }}</div></div>
+          <div class="col-md-6"><div class="text-muted small">Phone</div><div>{{ profile.phone|default:"—" }}</div></div>
+          <div class="col-md-6"><div class="text-muted small">CNIC / ID</div><div>{{ profile.cnic|default:"—" }}</div></div>
+          <div class="col-md-6"><div class="text-muted small">Date of Birth</div><div>{{ profile.date_of_birth|default:"—" }}</div></div>
+          <div class="col-md-6"><div class="text-muted small">Occupation</div><div>{{ profile.occupation|default:"—" }}</div></div>
+          <div class="col-md-6"><div class="text-muted small">Employer</div><div>{{ profile.employer_name|default:"—" }}</div></div>
+          <div class="col-md-6"><div class="text-muted small">Monthly Income</div><div>{% if profile.monthly_income %}Rs {{ profile.monthly_income|floatformat:0|intcomma }}{% else %}—{% endif %}</div></div>
+          <div class="col-md-6"><div class="text-muted small">Branch</div><div>{{ profile.branch.name|default:"—" }}</div></div>
+          <div class="col-12"><div class="text-muted small">Address</div><div>{{ profile.address|default:"—" }}</div></div>
+          <div class="col-md-6"><div class="text-muted small">Member Since</div><div>{{ profile.created_at|date:"d M Y" }}</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-body">
+        <h6 class="fw-bold mb-3">Accounts</h6>
+        <div class="table-responsive">
+          <table class="table table-sm align-middle mb-0">
+            <thead><tr><th>Account #</th><th>Type</th><th>Status</th><th class="text-end">Balance</th></tr></thead>
+            <tbody>
+              {% for a in accounts %}
+              <tr><td>{{ a.account_number }}</td><td>{{ a.get_account_type_display }}</td>
+                <td><span class="badge text-bg-light">{{ a.get_status_display }}</span></td>
+                <td class="text-end fw-semibold">Rs {{ a.balance|floatformat:2|intcomma }}</td></tr>
+              {% empty %}
+              <tr><td colspan="4" class="text-center text-muted py-3">No accounts</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
