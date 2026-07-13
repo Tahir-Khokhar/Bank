@@ -1,0 +1,30 @@
+{% load static %}
+<nav class="navbar navbar-expand-lg navbar-dark" style="background:linear-gradient(90deg,#0a2540,#0b5ed7);">
+  <div class="container">
+    <a class="navbar-brand fw-bold" href="/">
+      <i class="bi bi-bank2 me-2"></i>BankMS
+    </a>
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsExample">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarsExample">
+      <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+        <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Login</a>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li><a class="dropdown-item" href="/customers/login/"><i class="bi bi-person me-2"></i>Customer Login</a></li>
+            <li><a class="dropdown-item" href="/employees/login/"><i class="bi bi-person-badge me-2"></i>Staff Login</a></li>
+          </ul>
+        </li>
+      </ul>
+
+      <div class="d-flex gap-2 ms-lg-3">
+        <a class="btn btn-outline-light btn-sm" href="/customers/login/"><i class="bi bi-box-arrow-in-right me-1"></i> Sign In</a>
+        <a class="btn btn-light btn-sm" href="/customers/register/"><i class="bi bi-person-plus me-1"></i> Open Account</a>
+      </div>
+    </div>
+  </div>
+</nav>
