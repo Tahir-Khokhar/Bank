@@ -1,0 +1,51 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% block title %}{{ employee_obj.full_name }} | BankMS{% endblock %}
+{% block breadcrumb_items %}<li class="breadcrumb-item"><a href="{% url 'employee-manage-list' %}">Employees</a></li><li class="breadcrumb-item active">{{ employee_obj.full_name }}</li>{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+  <div class="d-flex align-items-center gap-3">
+    <span class="avatar avatar-lg avatar-initial" style="font-size:1.6rem;">{{ employee_obj.full_name|slice:':1'|upper }}</span>
+    <div>
+      <h3 class="fw-bold mb-0">{{ employee_obj.full_name }}</h3>
+      <div class="text-muted">{{ employee_obj.employee_code }} • {{ employee_obj.get_role_display }}
+        {% if employee_obj.is_suspended %}<span class="badge text-bg-warning ms-1">Suspended</span>
+        {% elif employee_obj.is_active %}<span class="badge text-bg-success ms-1">Active</span>
+        {% else %}<span class="badge text-bg-secondary ms-1">Inactive</span>{% endif %}
+      </div>
+    </div>
+  </div>
+  <div class="d-flex gap-2 flex-wrap">
+    <a href="{% url 'employee-edit' employee_obj.id %}" class="btn btn-outline-primary"><i class="bi bi-pencil me-1"></i>Edit</a>
+    <form method="post" action="{% url 'employee-toggle-suspend' employee_obj.id %}">{% csrf_token %}
+      <button class="btn btn-outline-warning">{% if employee_obj.is_suspended %}Reinstate{% else %}Suspend{% endif %}</button>
+    </form>
+    <form method="post" action="{% url 'employee-toggle-active' employee_obj.id %}">{% csrf_token %}
+      <button class="btn btn-outline-{% if employee_obj.is_active %}danger{% else %}success{% endif %}">{% if employee_obj.is_active %}Deactivate{% else %}Activate{% endif %}</button>
+    </form>
+  </div>
+</div>
+
+<div class="row g-3">
+  <div class="col-lg-7"><div class="card"><div class="card-body">
+    <h6 class="fw-bold mb-3">Details</h6>
+    <div class="row g-3 small">
+      <div class="col-md-6"><span class="text-muted">Email:</span> {{ employee_obj.email }}</div>
+      <div class="col-md-6"><span class="text-muted">Phone:</span> {{ employee_obj.phone|default:"—" }}</div>
+      <div class="col-md-6"><span class="text-muted">CNIC:</span> {{ employee_obj.cnic|default:"—" }}</div>
+      <div class="col-md-6"><span class="text-muted">Branch:</span> {{ employee_obj.branch.name|default:"—" }}</div>
+      <div class="col-md-6"><span class="text-muted">Position:</span> {{ employee_obj.position|default:"—" }}</div>
+      <div class="col-md-6"><span class="text-muted">Joined:</span> {{ employee_obj.created_at|date:"d M Y" }}</div>
+      <div class="col-12"><span class="text-muted">Address:</span> {{ employee_obj.address|default:"—" }}</div>
+    </div>
+    <hr>
+    <span class="badge text-bg-{% if employee_obj.can_approve_loans %}success{% else %}light{% endif %} me-1">Approve Loans</span>
+    <span class="badge text-bg-{% if employee_obj.can_reverse_transactions %}success{% else %}light{% endif %}">Reverse Transactions</span>
+  </div></div></div>
+  <div class="col-lg-5"><div class="card"><div class="card-body">
+    <h6 class="fw-bold mb-3">Performance</h6>
+    <div class="d-flex justify-content-between border-bottom py-2"><span class="text-muted">Transactions handled</span><span class="fw-bold">{{ created_transactions }}</span></div>
+    <div class="d-flex justify-content-between py-2"><span class="text-muted">Loans decided</span><span class="fw-bold">{{ approved_loans }}</span></div>
+  </div></div></div>
+</div>
+{% endblock %}
