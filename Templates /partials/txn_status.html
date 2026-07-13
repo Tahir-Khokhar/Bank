@@ -1,0 +1,6 @@
+{% comment %} Transaction status badge. Param: status {% endcomment %}
+{% if status == 'success' %}<span class="badge text-bg-success">Success</span>
+{% elif status == 'pending' %}<span class="badge text-bg-warning">Pending</span>
+{% elif status == 'failed' %}<span class="badge text-bg-danger">Failed</span>
+{% elif status == 'reversed' %}<span class="badge text-bg-secondary">Reversed</span>
+{% else %}<span class="badge text-bg-light">{{ status|capfirst }}</span>{% endif %}
