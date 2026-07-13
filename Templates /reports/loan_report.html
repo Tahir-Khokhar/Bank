@@ -1,0 +1,43 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load humanize %}
+{% block title %}Loan Report | BankMS{% endblock %}
+{% block breadcrumb_items %}<li class="breadcrumb-item"><a href="{% url 'reports-home' %}">Reports</a></li><li class="breadcrumb-item active">Loans</li>{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+  <h2 class="fw-bold mb-0">Loan Report <span class="badge text-bg-light">{{ count }}</span></h2>
+  <div class="d-flex gap-2 app-no-print">
+    <a href="?export=pdf" class="btn btn-outline-danger btn-sm"><i class="bi bi-file-earmark-pdf me-1"></i>PDF</a>
+    <a href="?export=excel" class="btn btn-outline-success btn-sm"><i class="bi bi-file-earmark-excel me-1"></i>Excel</a>
+    <a href="?export=csv" class="btn btn-outline-secondary btn-sm"><i class="bi bi-filetype-csv me-1"></i>CSV</a>
+    <button onclick="window.print()" class="btn btn-outline-dark btn-sm"><i class="bi bi-printer me-1"></i>Print</button>
+  </div>
+</div>
+
+<div class="row g-3 mb-3">
+  {% include 'partials/stat_card.html' with label='Total Loans' value=count icon='bi-cash-coin' tint='primary' %}
+  {% include 'partials/stat_card.html' with label='Active Portfolio' prefix='Rs ' value=portfolio|floatformat:0 icon='bi-cash-stack' tint='success' %}
+</div>
+
+<div class="card"><div class="table-responsive">
+  <table class="table table-sm table-hover align-middle mb-0">
+    <thead><tr><th>Reference</th><th>Customer</th><th>Type</th><th class="text-end">Principal</th><th class="text-end">EMI</th><th class="text-end">Remaining</th><th>Status</th><th>Applied</th></tr></thead>
+    <tbody>
+      {% for l in loans %}
+      <tr>
+        <td class="small">{{ l.reference }}</td>
+        <td class="small">{{ l.customer.full_name }}</td>
+        <td class="small">{{ l.get_loan_type_display }}</td>
+        <td class="text-end">Rs {{ l.principal_amount|floatformat:0|intcomma }}</td>
+        <td class="text-end">Rs {{ l.emi_amount|floatformat:0|intcomma }}</td>
+        <td class="text-end">Rs {{ l.remaining_amount|floatformat:0|intcomma }}</td>
+        <td><span class="badge text-bg-light">{{ l.get_status_display }}</span></td>
+        <td class="small">{{ l.applied_at|date:"d M Y" }}</td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="8"><div class="empty-state"><i class="bi bi-cash-coin"></i><p>No loans</p></div></td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div></div>
+{% endblock %}
