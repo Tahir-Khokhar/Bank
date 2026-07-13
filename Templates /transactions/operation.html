@@ -1,0 +1,45 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load humanize %}
+{% block title %}{{ heading }} | BankMS{% endblock %}
+{% block breadcrumb_items %}<li class="breadcrumb-item active">{{ heading }}</li>{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center"><div class="col-lg-7">
+  <div class="card"><div class="card-body p-4">
+    <div class="d-flex align-items-center gap-2 mb-4">
+      <span class="stat-icon tint-{{ accent }}"><i class="bi {{ icon }}"></i></span>
+      <h4 class="fw-bold mb-0">{{ heading }}</h4>
+    </div>
+    <form method="post">
+      {% csrf_token %}
+      {% if is_staff %}
+        <div class="mb-3">
+          <label class="form-label">Account Number</label>
+          <input class="form-control" name="account_number" placeholder="Enter 16-digit account number" required>
+          <div class="form-text">Enter the customer's account number.</div>
+        </div>
+      {% else %}
+        <div class="mb-3">
+          <label class="form-label">Account</label>
+          <select class="form-select" name="account" required>
+            {% for a in customer_accounts %}
+              <option value="{{ a.id }}">{{ a.account_number }} — {{ a.get_account_type_display }} (Rs {{ a.balance|floatformat:2|intcomma }})</option>
+            {% empty %}
+              <option disabled>No available accounts</option>
+            {% endfor %}
+          </select>
+        </div>
+      {% endif %}
+      <div class="mb-3">
+        <label class="form-label">Amount (Rs)</label>
+        <input class="form-control form-control-lg" type="number" step="0.01" min="0.01" name="amount" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Description</label>
+        <input class="form-control" name="description" placeholder="Optional note">
+      </div>
+      <button class="btn btn-{{ accent }} w-100 btn-lg"><i class="bi {{ icon }} me-1"></i>Confirm {{ operation|capfirst }}</button>
+    </form>
+  </div></div>
+</div></div>
+{% endblock %}
