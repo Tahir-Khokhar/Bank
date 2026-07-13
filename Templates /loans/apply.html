@@ -1,0 +1,65 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load humanize %}
+{% block title %}Apply for Loan | BankMS{% endblock %}
+{% block breadcrumb_items %}<li class="breadcrumb-item"><a href="{% url 'loan-list' %}">Loans</a></li><li class="breadcrumb-item active">Apply</li>{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center"><div class="col-lg-8">
+  <div class="card"><div class="card-body p-4">
+    <h4 class="fw-bold mb-4"><i class="bi bi-cash-stack me-2"></i>Apply for a Loan</h4>
+    <form method="post" id="loanForm">
+      {% csrf_token %}
+      <div class="row g-3">
+        <div class="col-md-6"><label class="form-label">Loan Type *</label>
+          <select class="form-select" name="loan_type" id="loanType" required>
+            {% for value, label in loan_types %}<option value="{{ value }}">{{ label }}</option>{% endfor %}
+          </select></div>
+        <div class="col-md-6"><label class="form-label">Disbursement Account</label>
+          <select class="form-select" name="account">
+            <option value="">— Select (optional) —</option>
+            {% for a in accounts %}<option value="{{ a.id }}">{{ a.account_number }} — {{ a.get_account_type_display }}</option>{% endfor %}
+          </select></div>
+        <div class="col-md-6"><label class="form-label">Loan Amount (Rs) *</label>
+          <input class="form-control" type="number" step="1000" min="1000" name="principal_amount" id="principal" required></div>
+        <div class="col-md-6"><label class="form-label">Tenure (months) *</label>
+          <input class="form-control" type="number" min="1" max="360" name="tenure_months" id="tenure" value="12" required></div>
+        <div class="col-12"><label class="form-label">Purpose</label>
+          <textarea class="form-control" name="purpose" rows="2" placeholder="Briefly describe the purpose"></textarea></div>
+      </div>
+
+      <div class="alert alert-info mt-3 d-flex justify-content-between align-items-center">
+        <div><i class="bi bi-calculator me-1"></i> Estimated EMI at <span id="rateLabel">18</span>% p.a.</div>
+        <div class="fw-bold fs-5" id="emiEstimate">Rs 0</div>
+      </div>
+
+      <button class="btn btn-primary w-100 btn-lg mt-2"><i class="bi bi-send-check me-1"></i>Submit Application</button>
+    </form>
+  </div></div>
+</div></div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  const rates = {{ default_rates|safe }};
+  const typeEl = document.getElementById('loanType');
+  const principalEl = document.getElementById('principal');
+  const tenureEl = document.getElementById('tenure');
+  const emiEl = document.getElementById('emiEstimate');
+  const rateLabel = document.getElementById('rateLabel');
+
+  function calc() {
+    const p = parseFloat(principalEl.value) || 0;
+    const n = parseInt(tenureEl.value) || 0;
+    const annual = parseFloat(rates[typeEl.value] || 12);
+    rateLabel.textContent = annual;
+    if (p <= 0 || n <= 0) { emiEl.textContent = 'Rs 0'; return; }
+    const r = annual / 1200;
+    let emi;
+    if (r === 0) { emi = p / n; }
+    else { const f = Math.pow(1 + r, n); emi = p * r * f / (f - 1); }
+    emiEl.textContent = 'Rs ' + emi.toLocaleString(undefined, {maximumFractionDigits: 0});
+  }
+  [typeEl, principalEl, tenureEl].forEach(el => el.addEventListener('input', calc));
+  calc();
+</script>
+{% endblock %}
