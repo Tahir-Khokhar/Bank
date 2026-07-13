@@ -1,0 +1,58 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load humanize %}
+{% block title %}Transactions | BankMS{% endblock %}
+{% block breadcrumb_items %}<li class="breadcrumb-item active">Transactions</li>{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+  <h2 class="fw-bold mb-0">Transactions</h2>
+  <div class="d-flex gap-2 app-no-print">
+    <a href="{% url 'transaction-export' 'csv' %}?{{ querystring }}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-filetype-csv me-1"></i>CSV</a>
+    <a href="{% url 'transaction-export' 'excel' %}?{{ querystring }}" class="btn btn-outline-success btn-sm"><i class="bi bi-file-earmark-excel me-1"></i>Excel</a>
+    <button onclick="window.print()" class="btn btn-outline-dark btn-sm"><i class="bi bi-printer me-1"></i>Print</button>
+  </div>
+</div>
+
+<div class="card mb-3 app-no-print"><div class="card-body">
+  <form method="get" class="row g-2 align-items-end">
+    <div class="col-md-3"><label class="form-label small">Search</label>
+      <input class="form-control form-control-sm" name="q" value="{{ search }}" placeholder="Reference, description"></div>
+    <div class="col-md-2"><label class="form-label small">Type</label>
+      <select class="form-select form-select-sm" name="type"><option value="">All</option>
+        {% for value, label in txn_types %}<option value="{{ value }}" {% if type == value %}selected{% endif %}>{{ label }}</option>{% endfor %}
+      </select></div>
+    <div class="col-md-2"><label class="form-label small">Status</label>
+      <select class="form-select form-select-sm" name="status"><option value="">All</option>
+        {% for value, label in statuses %}<option value="{{ value }}" {% if status == value %}selected{% endif %}>{{ label }}</option>{% endfor %}
+      </select></div>
+    <div class="col-md-2"><label class="form-label small">From</label>
+      <input type="date" class="form-control form-control-sm" name="from" value="{{ date_from }}"></div>
+    <div class="col-md-2"><label class="form-label small">To</label>
+      <input type="date" class="form-control form-control-sm" name="to" value="{{ date_to }}"></div>
+    <div class="col-md-1"><button class="btn btn-primary btn-sm w-100"><i class="bi bi-search"></i></button></div>
+  </form>
+</div></div>
+
+<div class="card"><div class="table-responsive">
+  <table class="table table-hover align-middle mb-0">
+    <thead><tr><th>Date</th><th>Reference</th>{% if is_staff %}<th>Account</th>{% endif %}<th>Type</th><th>Description</th><th>Status</th><th class="text-end">Amount</th></tr></thead>
+    <tbody>
+      {% for t in transactions %}
+      <tr>
+        <td class="small">{{ t.created_at|date:"d M Y H:i" }}</td>
+        <td class="small"><a href="{% url 'transaction-detail' t.id %}" class="text-decoration-none">{{ t.reference }}</a></td>
+        {% if is_staff %}<td class="small">{{ t.account.account_number }}<div class="text-muted">{{ t.account.customer.full_name }}</div></td>{% endif %}
+        <td>{{ t.get_txn_type_display }}</td>
+        <td class="small">{{ t.description|truncatechars:32 }}</td>
+        <td>{% include 'partials/txn_status.html' with status=t.status %}</td>
+        <td class="text-end fw-semibold {% if t.direction == 'credit' %}text-success{% else %}text-danger{% endif %}">
+          {% if t.direction == 'credit' %}+{% else %}-{% endif %}Rs {{ t.amount|floatformat:2|intcomma }}</td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="7"><div class="empty-state"><i class="bi bi-receipt"></i><p>No transactions found</p></div></td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div></div>
+{% include 'partials/pager.html' with page_obj=page_obj %}
+{% endblock %}
