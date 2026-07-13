@@ -1,0 +1,72 @@
+{% load static %}
+{% comment %} Role-aware sidebar navigation. `current_role` is provided by the context processor. {% endcomment %}
+<aside class="sidebar" id="appSidebar">
+  <a href="{{ dashboard_home_url }}" class="sidebar-brand text-decoration-none">
+    <span class="logo-badge"><i class="bi bi-bank2"></i></span>
+    <span>BankMS</span>
+  </a>
+
+  {% if current_role == 'customer' %}
+    <div class="nav-section">Overview</div>
+    <nav class="nav flex-column">
+      <a class="nav-link {% if active_nav == 'home' %}active{% endif %}" href="/dashboard/customer/"><i class="bi bi-grid-1x2"></i> Dashboard</a>
+      <a class="nav-link {% if active_nav == 'accounts' %}active{% endif %}" href="/dashboard/customer/accounts/"><i class="bi bi-wallet2"></i> My Accounts</a>
+    </nav>
+    <div class="nav-section">Banking</div>
+    <nav class="nav flex-column">
+      <a class="nav-link {% if active_nav == 'deposit' %}active{% endif %}" href="/transactions/deposit/"><i class="bi bi-plus-circle"></i> Deposit</a>
+      <a class="nav-link {% if active_nav == 'withdraw' %}active{% endif %}" href="/transactions/withdraw/"><i class="bi bi-dash-circle"></i> Withdraw</a>
+      <a class="nav-link {% if active_nav == 'transfer' %}active{% endif %}" href="/transactions/transfer/"><i class="bi bi-arrow-left-right"></i> Transfer</a>
+      <a class="nav-link {% if active_nav == 'transactions' %}active{% endif %}" href="/transactions/"><i class="bi bi-receipt"></i> Transactions</a>
+    </nav>
+    <div class="nav-section">Services</div>
+    <nav class="nav flex-column">
+      <a class="nav-link {% if active_nav == 'loans' %}active{% endif %}" href="/loans/"><i class="bi bi-cash-coin"></i> Loans</a>
+      <a class="nav-link {% if active_nav == 'reports' %}active{% endif %}" href="/reports/"><i class="bi bi-file-earmark-bar-graph"></i> Statements</a>
+      <a class="nav-link {% if active_nav == 'notifications' %}active{% endif %}" href="/dashboard/notifications/"><i class="bi bi-bell"></i> Notifications {% if unread_notifications %}<span class="badge rounded-pill text-bg-danger">{{ unread_notifications }}</span>{% endif %}</a>
+    </nav>
+
+  {% elif current_role == 'employee' %}
+    <div class="nav-section">Overview</div>
+    <nav class="nav flex-column">
+      <a class="nav-link {% if active_nav == 'home' %}active{% endif %}" href="/dashboard/employee/"><i class="bi bi-grid-1x2"></i> Dashboard</a>
+    </nav>
+    <div class="nav-section">Operations</div>
+    <nav class="nav flex-column">
+      <a class="nav-link {% if active_nav == 'customers' %}active{% endif %}" href="/customers/manage/"><i class="bi bi-people"></i> Customers</a>
+      <a class="nav-link {% if active_nav == 'deposit' %}active{% endif %}" href="/transactions/deposit/"><i class="bi bi-plus-circle"></i> Deposit</a>
+      <a class="nav-link {% if active_nav == 'withdraw' %}active{% endif %}" href="/transactions/withdraw/"><i class="bi bi-dash-circle"></i> Withdraw</a>
+      <a class="nav-link {% if active_nav == 'transfer' %}active{% endif %}" href="/transactions/transfer/"><i class="bi bi-arrow-left-right"></i> Transfer</a>
+      <a class="nav-link {% if active_nav == 'transactions' %}active{% endif %}" href="/transactions/"><i class="bi bi-receipt"></i> Transactions</a>
+    </nav>
+    <div class="nav-section">Services</div>
+    <nav class="nav flex-column">
+      <a class="nav-link {% if active_nav == 'loans' %}active{% endif %}" href="/loans/"><i class="bi bi-cash-coin"></i> Loan Requests</a>
+      <a class="nav-link {% if active_nav == 'reports' %}active{% endif %}" href="/reports/"><i class="bi bi-file-earmark-bar-graph"></i> Reports</a>
+      <a class="nav-link {% if active_nav == 'notifications' %}active{% endif %}" href="/dashboard/notifications/"><i class="bi bi-bell"></i> Notifications {% if unread_notifications %}<span class="badge rounded-pill text-bg-danger">{{ unread_notifications }}</span>{% endif %}</a>
+    </nav>
+
+  {% elif current_role == 'manager' %}
+    <div class="nav-section">Overview</div>
+    <nav class="nav flex-column">
+      <a class="nav-link {% if active_nav == 'home' %}active{% endif %}" href="/dashboard/admin/"><i class="bi bi-grid-1x2"></i> Dashboard</a>
+    </nav>
+    <div class="nav-section">Management</div>
+    <nav class="nav flex-column">
+      <a class="nav-link {% if active_nav == 'employees' %}active{% endif %}" href="/employees/manage/"><i class="bi bi-person-badge"></i> Employees</a>
+      <a class="nav-link {% if active_nav == 'customers' %}active{% endif %}" href="/customers/manage/"><i class="bi bi-people"></i> Customers</a>
+      <a class="nav-link {% if active_nav == 'transactions' %}active{% endif %}" href="/transactions/"><i class="bi bi-receipt"></i> Transactions</a>
+      <a class="nav-link {% if active_nav == 'loans' %}active{% endif %}" href="/loans/"><i class="bi bi-cash-coin"></i> Loans</a>
+    </nav>
+    <div class="nav-section">Insights</div>
+    <nav class="nav flex-column">
+      <a class="nav-link {% if active_nav == 'reports' %}active{% endif %}" href="/reports/"><i class="bi bi-file-earmark-bar-graph"></i> Reports</a>
+      <a class="nav-link {% if active_nav == 'activity' %}active{% endif %}" href="/dashboard/activity/"><i class="bi bi-activity"></i> Activity & Audit</a>
+      <a class="nav-link {% if active_nav == 'notifications' %}active{% endif %}" href="/dashboard/notifications/"><i class="bi bi-bell"></i> Notifications {% if unread_notifications %}<span class="badge rounded-pill text-bg-danger">{{ unread_notifications }}</span>{% endif %}</a>
+    </nav>
+  {% endif %}
+
+  <div class="sidebar-footer">
+    <i class="bi bi-shield-check me-1"></i> Secure Session
+  </div>
+</aside>
