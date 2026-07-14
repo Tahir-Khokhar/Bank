@@ -1,0 +1,200 @@
+/* ============================================================
+   BankMS - Enterprise banking UI theme
+   ============================================================ */
+
+:root {
+  --brand: #0b5ed7;
+  --brand-dark: #0a2540;
+  --brand-2: #0aa2c0;
+  --sidebar-bg: #0a2540;
+  --sidebar-bg-2: #0d2f52;
+  --sidebar-link: #adc4e0;
+  --sidebar-link-active: #ffffff;
+  --bg: #f4f6fb;
+  --card-radius: 14px;
+  --shadow-sm: 0 1px 2px rgba(16, 24, 40, .06), 0 1px 3px rgba(16, 24, 40, .1);
+  --shadow: 0 4px 20px rgba(16, 24, 40, .08);
+}
+
+body {
+  min-height: 100vh;
+  background: var(--bg);
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  color: #1f2937;
+}
+
+/* ---------- Public navbar buttons ---------- */
+.navbar .btn { border-radius: 999px; }
+
+/* ============================================================
+   Dashboard shell
+   ============================================================ */
+.app-shell { display: flex; min-height: 100vh; }
+
+.sidebar {
+  width: 260px;
+  min-width: 260px;
+  background: linear-gradient(180deg, var(--sidebar-bg), var(--sidebar-bg-2));
+  color: #fff;
+  position: fixed;
+  top: 0; bottom: 0; left: 0;
+  display: flex;
+  flex-direction: column;
+  z-index: 1040;
+  transition: transform .25s ease;
+  overflow-y: auto;
+}
+.sidebar::-webkit-scrollbar { width: 6px; }
+.sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,.15); border-radius: 8px; }
+
+.sidebar-brand {
+  padding: 1.15rem 1.25rem;
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+.sidebar-brand .logo-badge {
+  width: 34px; height: 34px; border-radius: 9px;
+  background: linear-gradient(135deg, var(--brand), var(--brand-2));
+  display: grid; place-items: center; font-size: 1.1rem;
+}
+
+.sidebar .nav-section {
+  padding: 1rem 1.25rem .35rem;
+  font-size: .68rem;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  color: #6f8bb0;
+  font-weight: 600;
+}
+.sidebar .nav-link {
+  color: var(--sidebar-link);
+  padding: .62rem 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  font-weight: 500;
+  border-left: 3px solid transparent;
+  transition: all .15s ease;
+}
+.sidebar .nav-link i { font-size: 1.05rem; width: 20px; text-align: center; }
+.sidebar .nav-link:hover { color: #fff; background: rgba(255,255,255,.06); }
+.sidebar .nav-link.active {
+  color: var(--sidebar-link-active);
+  background: rgba(11, 94, 215, .22);
+  border-left-color: var(--brand-2);
+}
+.sidebar .nav-link .badge { margin-left: auto; }
+
+.sidebar-footer {
+  margin-top: auto;
+  padding: 1rem 1.25rem;
+  border-top: 1px solid rgba(255,255,255,.08);
+  font-size: .8rem;
+  color: #7f9ac0;
+}
+
+/* main column */
+.app-main {
+  margin-left: 260px;
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.topbar {
+  height: 64px;
+  background: #fff;
+  border-bottom: 1px solid #e5e9f2;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0 1.25rem;
+  position: sticky;
+  top: 0;
+  z-index: 1030;
+}
+.topbar .page-title { font-weight: 700; font-size: 1.05rem; margin: 0; }
+.topbar .search-box { max-width: 320px; }
+
+.avatar {
+  width: 38px; height: 38px; border-radius: 50%;
+  object-fit: cover; background: #dce4f2;
+}
+.avatar-sm { width: 30px; height: 30px; }
+.avatar-lg { width: 96px; height: 96px; }
+
+.app-content { padding: 1.5rem; flex: 1; }
+
+/* ---------- Cards & stats ---------- */
+.card { border: none; border-radius: var(--card-radius); box-shadow: var(--shadow-sm); }
+.card-elevated { box-shadow: var(--shadow); }
+
+.stat-card { position: relative; overflow: hidden; }
+.stat-card .stat-icon {
+  width: 48px; height: 48px; border-radius: 12px;
+  display: grid; place-items: center; font-size: 1.4rem;
+}
+.stat-card .stat-value { font-size: 1.6rem; font-weight: 700; line-height: 1.1; }
+.stat-card .stat-label { color: #6b7280; font-size: .82rem; }
+
+.tint-primary { background: rgba(11,94,215,.12); color: var(--brand); }
+.tint-success { background: rgba(25,135,84,.12); color: #198754; }
+.tint-warning { background: rgba(255,193,7,.16); color: #b8860b; }
+.tint-danger  { background: rgba(220,53,69,.12); color: #dc3545; }
+.tint-info    { background: rgba(10,162,192,.14); color: var(--brand-2); }
+.tint-dark    { background: rgba(10,37,64,.10); color: var(--brand-dark); }
+
+/* ---------- Tables ---------- */
+.table thead th {
+  font-size: .74rem; text-transform: uppercase; letter-spacing: .04em;
+  color: #6b7280; font-weight: 600; border-bottom: 1px solid #eef1f6;
+}
+.table td { vertical-align: middle; }
+
+/* ---------- Quick actions ---------- */
+.quick-action {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: .5rem; padding: 1.1rem .5rem; border-radius: 12px;
+  background: #fff; box-shadow: var(--shadow-sm); color: #374151;
+  text-decoration: none; height: 100%; text-align: center; font-weight: 500;
+  transition: transform .12s ease, box-shadow .12s ease;
+}
+.quick-action:hover { transform: translateY(-3px); box-shadow: var(--shadow); color: var(--brand); }
+.quick-action i { font-size: 1.5rem; color: var(--brand); }
+
+/* ---------- Misc ---------- */
+.avatar-initial {
+  display: grid; place-items: center; color: #fff; font-weight: 600;
+  background: linear-gradient(135deg, var(--brand), var(--brand-2));
+}
+.empty-state { text-align: center; padding: 3rem 1rem; color: #94a3b8; }
+.empty-state i { font-size: 2.6rem; }
+.dropdown-menu { box-shadow: var(--shadow); border: 1px solid #eef1f6; border-radius: 12px; }
+.notif-item { white-space: normal; }
+.notif-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--brand); }
+
+.progress { background: #eef1f6; }
+
+/* ---------- Sidebar toggle (mobile) ---------- */
+.sidebar-backdrop {
+  display: none; position: fixed; inset: 0; background: rgba(10,37,64,.45); z-index: 1035;
+}
+@media (max-width: 991.98px) {
+  .sidebar { transform: translateX(-100%); }
+  .sidebar.show { transform: translateX(0); }
+  .app-main { margin-left: 0; }
+  .sidebar-backdrop.show { display: block; }
+}
+
+@media print {
+  .sidebar, .topbar, .app-no-print, .btn, .sidebar-backdrop { display: none !important; }
+  .app-main { margin-left: 0; }
+  .app-content { padding: 0; }
+  body { background: #fff; }
+}
