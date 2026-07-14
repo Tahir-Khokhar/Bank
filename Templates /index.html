@@ -26,56 +26,11 @@
     <div class="col-lg-5">
       <div class="card shadow-sm border-0">
         <div class="card-body p-4">
-          <h5 class="card-title mb-3"><i class="bi bi-info-circle me-2"></i> Quick Actions</h5>
-
-          <div class="list-group list-group-flush">
-            <a class="list-group-item list-group-item-action" href="/"> <i class="bi bi-house me-2"></i> Home</a>
-            <a class="list-group-item list-group-item-action" href="/dashboard/admin/"> <i class="bi bi-speedometer me-2"></i> Admin Metrics</a>
-            <a class="list-group-item list-group-item-action" href="/dashboard/employee/"> <i class="bi bi-people me-2"></i> Employees</a>
-            <a class="list-group-item list-group-item-action" href="/dashboard/customer/"> <i class="bi bi-person-check me-2"></i> Customers</a>
-          </div>
-
-          <div class="mt-4">
-            <div class="alert alert-info mb-0">
-              <div class="d-flex align-items-start">
-                <i class="bi bi-book me-2 mt-1"></i>
-                <div>
-                  <strong>API Documentation:</strong> integrate Swagger/OpenAPI later.
-                </div>
-              </div>
-            </div>
-          </div>
-
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- About -->
-  <div class="mt-5">
-    <div class="row g-4">
-      <div class="col-md-6">
-        <div class="card shadow-sm border-0 h-100">
-          <div class="card-body p-4">
-            <h3 class="h4 fw-bold"><i class="bi bi-building me-2"></i> About the System</h3>
-            <p class="text-muted mb-0">
-              Built with Django + Django REST Framework. The architecture separates API, services,
-              templates, static files, and utilities to support long-term development.
-            </p>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-6">
-        <div class="card shadow-sm border-0 h-100">
-          <div class="card-body p-4">
-            <h3 class="h4 fw-bold"><i class="bi bi-lightning-charge me-2"></i> Features</h3>
-            <ul class="text-muted mb-0">
-              <li><i class="bi bi-check2-circle me-2"></i> Token/JWT-ready authentication</li>
-              <li><i class="bi bi-check2-circle me-2"></i> Pagination, filtering, search & ordering</li>
-              <li><i class="bi bi-check2-circle me-2"></i> Logging, validators, managers & permissions</li>
-              <li><i class="bi bi-check2-circle me-2"></i> Class-based views only</li>
-            </ul>
-          </div>
+          <h5 class="card-title mb-3"><i class="bi bi-info-circle me-2"></i> About the System</h5>
+          <p class="text-muted mb-0">
+            Built with Django + Django REST Framework. The architecture separates API, services,
+            templates, static files, and utilities to support long-term development.
+          </p>
         </div>
       </div>
     </div>
@@ -85,16 +40,13 @@
   <div class="mt-5">
     <h2 class="h4 fw-bold mb-3"><i class="bi bi-bar-chart me-2"></i> Statistics</h2>
     <div class="row g-3">
-      {% comment %}
-      Rendering placeholder stats (backend integration later)
-      {% endcomment %}
       <div class="col-md-6 col-lg-3">
         <div class="card shadow-sm border-0">
           <div class="card-body">
             <div class="d-flex align-items-center justify-content-between">
               <div>
                 <div class="text-muted">Total Customers</div>
-                <div class="fs-3 fw-bold">—</div>
+                <div class="fs-3 fw-bold">{{ stats.total_customers }}</div>
               </div>
               <i class="bi bi-people fs-1 text-primary"></i>
             </div>
@@ -107,7 +59,7 @@
             <div class="d-flex align-items-center justify-content-between">
               <div>
                 <div class="text-muted">Total Accounts</div>
-                <div class="fs-3 fw-bold">—</div>
+                <div class="fs-3 fw-bold">{{ stats.total_accounts }}</div>
               </div>
               <i class="bi bi-credit-card fs-1 text-success"></i>
             </div>
@@ -120,7 +72,7 @@
             <div class="d-flex align-items-center justify-content-between">
               <div>
                 <div class="text-muted">Active Loans</div>
-                <div class="fs-3 fw-bold">—</div>
+                <div class="fs-3 fw-bold">{{ stats.active_loans }}</div>
               </div>
               <i class="bi bi-cash-coin fs-1 text-warning"></i>
             </div>
@@ -133,7 +85,7 @@
             <div class="d-flex align-items-center justify-content-between">
               <div>
                 <div class="text-muted">Employees</div>
-                <div class="fs-3 fw-bold">—</div>
+                <div class="fs-3 fw-bold">{{ stats.total_employees }}</div>
               </div>
               <i class="bi bi-person-badge fs-1 text-danger"></i>
             </div>
@@ -142,38 +94,4 @@
       </div>
     </div>
   </div>
-
-  <!-- Auth buttons -->
-  <div class="mt-4">
-    <div class="d-flex flex-wrap gap-2">
-      <a class="btn btn-outline-primary" href="employees/login/"><i class="bi bi-box-arrow-in-right me-1"></i> Employees Login</a>
-      <a class="btn btn-outline-primary" href="customers/login/"><i class="bi bi-box-arrow-in-right me-1"></i> Customers Login</a>
-      <a class="btn btn-primary" href="employees/register/"><i class="bi bi-person-plus me-1"></i> Employees Register</a>
-      <a class="btn btn-primary" href="customers/register/"><i class="bi bi-person-plus me-1"></i> Customers Register</a>
-      <a class="btn btn-outline-dark" href="/dashboard/admin/"><i class="bi bi-file-earmark-code me-1"></i> API Documentation</a>
-    </div>
-  </div>
-
-  <!-- Contact -->
-  <div class="mt-5">
-    <div class="card shadow-sm border-0">
-      <div class="card-body p-4">
-        <div class="row align-items-center g-4">
-          <div class="col-lg-7">
-            <h2 class="h4 fw-bold"><i class="bi bi-chat-left-text me-2"></i> Contact Us</h2>
-            <p class="text-muted mb-0">
-              Add customer support forms / email integration later.
-            </p>
-          </div>
-          <div class="col-lg-5">
-            <form class="d-flex gap-2" onsubmit="return false;">
-              <input class="form-control" placeholder="Your email" />
-              <button class="btn btn-primary" type="submit">Send</button>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
 {% endblock %}
-
